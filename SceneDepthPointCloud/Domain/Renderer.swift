@@ -35,9 +35,9 @@ final class Renderer {
     private let device: MTLDevice
     private let library: MTLLibrary
     private let renderDestination: RenderDestinationProvider
-    private let relaxedStencilState: MTLDepthStencilState
-    private let depthStencilState: MTLDepthStencilState
-    private let commandQueue: MTLCommandQueue
+    private var relaxedStencilState: MTLDepthStencilState
+    private var depthStencilState: MTLDepthStencilState
+    private var commandQueue: MTLCommandQueue
     private lazy var unprojectPipelineState = makeUnprojectionPipelineState()!
     private lazy var rgbPipelineState = makeRGBPipelineState()!
     private lazy var particlePipelineState = makeParticlePipelineState()!
@@ -49,7 +49,7 @@ final class Renderer {
     private var confidenceTexture: CVMetalTexture?
     
     // Multi-buffer rendering pipeline
-    private let inFlightSemaphore: DispatchSemaphore
+    private var inFlightSemaphore: DispatchSemaphore
     private var currentBufferIndex = 0
     
     // The current viewport size
@@ -243,7 +243,6 @@ final class Renderer {
     }
     
     private func shouldAccumulate(frame: ARFrame) -> Bool {
-        // MARK: SAVE PLY
         if (!isRecording) {
             return false
         }
@@ -448,5 +447,24 @@ extension Renderer {
                 self.lidarRawStringData = fileToWrite
             }
         }
+    }
+}
+
+extension Renderer {
+    /// 재측정을 위한 Renderer 초기화 함수
+    /// https://github.com/ryanphilly/IOS-PointCloud 코드 참고
+    func clearParticles() {
+        self.currentPointIndex = 0
+        self.currentPointCount = 0
+        
+        self.rgbUniformsBuffers = [MetalBuffer<RGBUniforms>]()
+        self.pointCloudUniformsBuffers = [MetalBuffer<PointCloudUniforms>]()
+        
+        self.commandQueue = device.makeCommandQueue()!
+        for _ in 0 ..< maxInFlightBuffers {
+            self.rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
+            self.pointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
+        }
+        self.particlesBuffer = .init(device: device, count: maxPoints, index: kParticleUniforms.rawValue)
     }
 }

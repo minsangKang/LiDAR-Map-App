@@ -129,6 +129,8 @@ extension MainVM {
                 self?.lidarData = LiDARData(rawStringData: rawStringData, pointCount: pointCount)
                 
                 // MARK: Renderer 초기화 부분 필요
+                self?.resetRenderer()
+                self?.mode = .ready
             }
             .store(in: &self.cancellables)
     }
@@ -148,5 +150,9 @@ extension MainVM {
     /// locationUsecase 에서 위치정보 받아와 currentLocation 값을 반영하는 함수
     private func getLocationData() {
         self.currentLocation = self.locationUsecase.getSuitableLocation(from: self.locations)
+    }
+    
+    private func resetRenderer() {
+        self.renderer.clearParticles()
     }
 }

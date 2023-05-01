@@ -18,8 +18,10 @@ struct LiDARData {
     let lidarFileSize: String
     // LiDAR 데이터 point 개수
     let pointCount: Int
+    let stringData: String
     
     init(rawStringData: String, pointCount: Int) {
+        self.stringData = rawStringData
         self.lidarFileName = "\(getTimeStr()).ply"
         
         if let data = rawStringData.data(using: .utf8) {

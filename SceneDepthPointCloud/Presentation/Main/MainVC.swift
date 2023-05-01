@@ -181,8 +181,12 @@ extension MainVC {
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] lidarData in
                 guard let lidarData = lidarData else { return }
-                // MARK: Make SelectLocationVM, Show SelectLocationVC
-                dump(lidarData)
+                
+                DispatchQueue.global().async { [weak self] in
+                    if let file = shareFile(content: lidarData.stringData, filename: lidarData.lidarFileName, folder: "") {
+                        self?.sharePLY(file: file)
+                    }
+                }
             })
             .store(in: &self.cancellables)
     }

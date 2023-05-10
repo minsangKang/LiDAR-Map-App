@@ -12,142 +12,97 @@ import SceneKit
 final class PCDViewerVC: UIViewController {
     static let identifier = "PCDViewerVC"
     
-    // Create a SceneKit Scene
+    // Create a SceneKit scene
     let scene = SCNScene()
-    
-    // Create a Point Cloud Node
-    let pointCloudNode = SCNNode()
-    
-    // Create LightNode
-    let lightNode = SCNNode()
-    
-    // Create AmbientLightNode
-    let ambientLightNode = SCNNode()
-    
-    // Create a Geometry
-    var pointCloudGeometry = SCNGeometry()
-    
-    // Add Point Cloud Data to Geometry
-    var pointCloudData: [SCNVector3] = []
-    
-    let sceneView = SCNView()
+    var fileContents: String?
+    var points: [(Float, Float, Float, UInt32)] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.loadPcdData()
-        self.configurePointCloudGeometry()
-        self.configureCamera()
-        self.configureLight()
-        self.configureSCNView()
-    }
+        self.loadPCDFile()
+        self.extractPoints()
     
+        // Create a geometry representing a point in the PCD file
+        let pointGeometry = SCNSphere(radius: 0.01) // adjust the radius as needed
+
+        // Iterate through the points in the PCD file and add a node for each point
+        for point in points {
+            // Create a node for the point and set its position
+            let pointNode = SCNNode(geometry: pointGeometry)
+            pointNode.position = SCNVector3(point.0, point.1, point.2)
+
+            // Set the color of the node based on the point's attributes (if applicable)
+            let red = Int((point.3 >> 16) & 0xFF)
+            let green = Int((point.3 >> 8) & 0xFF)
+            let blue = Int(point.3 & 0xFF)
+            let color = UIColor(red: CGFloat(red)/255.0, green: CGFloat(green)/255.0, blue: CGFloat(blue)/255.0, alpha: 1.0)
+            pointNode.geometry?.firstMaterial?.diffuse.contents = color
+
+            // Add the node to the scene
+            self.scene.rootNode.addChildNode(pointNode)
+        }
+        self.points = []
+
+        // Create a SceneKit view and add the scene to it
+        let scnView = SCNView(frame: self.view.bounds)
+        self.view.addSubview(scnView)
+        scnView.scene = scene
+
+        // Configure the view's camera
+        let camera = SCNCamera()
+        camera.zFar = 100 // adjust the zFar as needed
+        let cameraNode = SCNNode()
+        cameraNode.camera = camera
+        cameraNode.position = SCNVector3(0, 0, 10) // adjust the position as needed
+        scene.rootNode.addChildNode(cameraNode)
+        
+        // Allow user to manipulate camera
+        scnView.allowsCameraControl = true
+    }
 }
 
 extension PCDViewerVC {
-    private func loadPcdData() {
-        guard let filePath = Bundle.main.path(forResource: "test2", ofType: "pcd") else {
-            fatalError("Unable to find the file test.pcd")
+    private func loadPCDFile() {
+        // Load PCD file into a string
+        guard let filePath = Bundle.main.path(forResource: "test", ofType: "pcd") else {
+            print("Error loading PCD file")
+            return
         }
 
-        do {
-            let fileContents = try String(contentsOfFile: filePath, encoding: .utf8)
-            self.pointCloudData = self.parsePointCloudData(from: fileContents)
-        } catch {
-            fatalError("Unable to read the contents of the file test.pcd")
+        guard var fileContents = try? String(contentsOfFile: filePath, encoding: .utf8) else {
+            print("Error reading PCD file contents")
+            return
         }
-
+        self.fileContents = fileContents
     }
     
-    private func parsePointCloudData(from fileContents: String) -> [SCNVector3] {
-        var pointCloudData = [SCNVector3]()
+    private func extractPoints() {
+        guard let fileContents = self.fileContents else { return }
+        // Extract the points from the PCD file
+        var headerFinded: Bool = false
         
-        let lines = fileContents.components(separatedBy: .newlines)
-        var isDataSection = false
-        
-        for line in lines {
-            if line.hasPrefix("DATA") {
-                isDataSection = true
-                continue
-            }
-            
-            if isDataSection {
+        for line in fileContents.components(separatedBy: .newlines) {
+            if headerFinded {
+                // Extract the points from the PCD file
                 let components = line.components(separatedBy: " ")
-                if components.count >= 3,
-                   let x = Float(components[0]),
-                   let y = Float(components[1]),
-                   let z = Float(components[2])
-                {
-                    let point = SCNVector3(x, y, z)
-                    pointCloudData.append(point)
+                if components.isEmpty == false, components.count == 4 {
+                    let x = Float(components[0]) ?? 0
+                    let y = Float(components[1]) ?? 0
+                    let z = Float(components[2]) ?? 0
+                    let color = UInt32(components[3]) ?? 0
+                    self.points.append((x, y, z, color))
+                }
+                if points.count == 100000 {
+                    break
+                }
+            } else {
+                // Parse the header lines
+                if line.hasPrefix("DATA ascii") {
+                    headerFinded = true
                 }
             }
         }
         
-        return pointCloudData
-    }
-    
-    private func configurePointCloudGeometry() {
-        guard self.pointCloudData.isEmpty == false else { return }
-        let vertices = self.pointCloudData.compactMap { SCNVector3($0.x, $0.y, $0.z) }
-        let vertexSource = SCNGeometrySource(normals: vertices)
-//        self.pointCloudGeometry.
-        self.pointCloudGeometry = SCNGeometry(sources: [vertexSource], elements: nil)
-        
-        // Set Geometry Material
-        let pointCloudMaterial = SCNMaterial()
-        self.pointCloudGeometry.materials = [pointCloudMaterial]
-        
-        // Add Geometry to Point Cloud Node
-        self.pointCloudNode.geometry = self.pointCloudGeometry
-        
-//        // Add Point Cloud Node to Scene
-//        self.scene.rootNode.addChildNode(self.pointCloudNode)
-    }
-    
-    private func configureCamera() {
-        // Add camera node
-        self.pointCloudNode.camera = SCNCamera()
-        // Place camera
-        self.pointCloudNode.position = SCNVector3(x: 0, y: 10, z: 35)
-        // Set camera on scene
-        self.scene.rootNode.addChildNode(self.pointCloudNode)
-    }
-    
-    private func configureLight() {
-        // Adding light to scene
-        self.lightNode.light = SCNLight()
-        self.lightNode.light?.type = .omni
-        self.lightNode.position = SCNVector3(x: 0, y: 10, z: 35)
-        self.scene.rootNode.addChildNode(self.lightNode)
-    }
-    
-    private func configureAmbientLight() {
-        // 6: Creating and adding ambien light to scene
-        self.ambientLightNode.light = SCNLight()
-        self.ambientLightNode.light?.type = .ambient
-        self.ambientLightNode.light?.color = UIColor.darkGray
-        self.scene.rootNode.addChildNode(self.ambientLightNode)
-    }
-    
-    private func configureSCNView() {
-        // Create a Scene View and present the scene
-        self.sceneView.translatesAutoresizingMaskIntoConstraints = false
-        self.sceneView.backgroundColor = .black
-        
-        // Add the scene view to your view hierarchy
-        self.view.addSubview(sceneView)
-        NSLayoutConstraint.activate([
-            self.sceneView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
-            self.sceneView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
-            self.sceneView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
-            self.sceneView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-        
-        // Allow user to manipulate camera
-        self.sceneView.allowsCameraControl = true
-        // Allow user translate image
-        self.sceneView.cameraControlConfiguration.allowsTranslation = false
-        // Set scene settings
-        self.sceneView.scene = self.scene
+        self.fileContents = nil
     }
 }

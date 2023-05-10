@@ -23,6 +23,7 @@ final class LidarDetailVC: UIViewController {
         self.title = "Lidar Detail"
         self.configureUI()
         self.configureBuildingInfo()
+        self.configureLidarInfo()
         self.bindViewModel()
     }
     
@@ -90,11 +91,27 @@ extension LidarDetailVC {
         self.showWebView(url: url)
     }
     
+    private func configureLidarInfo() {
+        let tapGesture: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapLidarInfo(_:)))
+        self.lidarInfoView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func tapLidarInfo(_ gesture: UITapGestureRecognizer) {
+//        guard let url = self.viewModel?.lidarDetailInfo?.placeURL else { return }
+        self.showPCDViewer()
+    }
+    
     private func showWebView(url: String) {
         guard let webViewVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: WebViewVC.identifier) as? WebViewVC else { return }
         
         webViewVC.setUrl(to: url)
         self.navigationController?.pushViewController(webViewVC, animated: true)
+    }
+    
+    private func showPCDViewer() {
+        guard let pcdViewerVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: PCDViewerVC.identifier) as? PCDViewerVC else { return }
+        
+        self.navigationController?.pushViewController(pcdViewerVC, animated: true)
     }
 }
 

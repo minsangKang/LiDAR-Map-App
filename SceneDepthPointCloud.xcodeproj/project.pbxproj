@@ -63,6 +63,9 @@
 		87C8FB1329F24EDF000C37CE /* FetchError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87C8FB1229F24EDF000C37CE /* FetchError.swift */; };
 		87C8FB1529F263C8000C37CE /* NetworkInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87C8FB1429F263C8000C37CE /* NetworkInterceptor.swift */; };
 		87C8FB1729F28F8A000C37CE /* SelectLocationLargeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87C8FB1629F28F8A000C37CE /* SelectLocationLargeButton.swift */; };
+		87DB12CB2A0B54F000A83368 /* test.pcd in Resources */ = {isa = PBXBuildFile; fileRef = 87DB12CA2A0B54F000A83368 /* test.pcd */; };
+		87DB12CE2A0B552B00A83368 /* PCDViewerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87DB12CD2A0B552B00A83368 /* PCDViewerVC.swift */; };
+		87DB12D02A0B5D5F00A83368 /* test2.pcd in Resources */ = {isa = PBXBuildFile; fileRef = 87DB12CF2A0B5D5F00A83368 /* test2.pcd */; };
 		87E9B5222A08A9D200FF4A8D /* LidarProcessStatusLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E9B5212A08A9D200FF4A8D /* LidarProcessStatusLabel.swift */; };
 		87E9B5282A08BED300FF4A8D /* BuildingInfoDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E9B5272A08BED300FF4A8D /* BuildingInfoDTO.swift */; };
 		87E9B52A2A08C8C300FF4A8D /* BuildingInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E9B5292A08C8C300FF4A8D /* BuildingInfo.swift */; };
@@ -141,6 +144,9 @@
 		87C8FB1229F24EDF000C37CE /* FetchError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchError.swift; sourceTree = "<group>"; };
 		87C8FB1429F263C8000C37CE /* NetworkInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterceptor.swift; sourceTree = "<group>"; };
 		87C8FB1629F28F8A000C37CE /* SelectLocationLargeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectLocationLargeButton.swift; sourceTree = "<group>"; };
+		87DB12CA2A0B54F000A83368 /* test.pcd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = test.pcd; path = ../../../Downloads/test.pcd; sourceTree = "<group>"; };
+		87DB12CD2A0B552B00A83368 /* PCDViewerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCDViewerVC.swift; sourceTree = "<group>"; };
+		87DB12CF2A0B5D5F00A83368 /* test2.pcd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = test2.pcd; path = "../../iphone-lidar-slam-web/src/data/test2.pcd"; sourceTree = "<group>"; };
 		87E9B5212A08A9D200FF4A8D /* LidarProcessStatusLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LidarProcessStatusLabel.swift; sourceTree = "<group>"; };
 		87E9B5272A08BED300FF4A8D /* BuildingInfoDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildingInfoDTO.swift; sourceTree = "<group>"; };
 		87E9B5292A08C8C300FF4A8D /* BuildingInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildingInfo.swift; sourceTree = "<group>"; };
@@ -190,6 +196,7 @@
 				87295C972A038DBB0067392D /* Scans */,
 				87A315532A076CEA0074BB1B /* LidarDetail */,
 				871356CB2A0AB7D90005DE8C /* WebView */,
+				87DB12CC2A0B551500A83368 /* PCDViewer */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -410,6 +417,14 @@
 			path = Repository;
 			sourceTree = "<group>";
 		};
+		87DB12CC2A0B551500A83368 /* PCDViewer */ = {
+			isa = PBXGroup;
+			children = (
+				87DB12CD2A0B552B00A83368 /* PCDViewerVC.swift */,
+			);
+			path = PCDViewer;
+			sourceTree = "<group>";
+		};
 		87FDBC1C29EEA52100D90D02 /* Entity */ = {
 			isa = PBXGroup;
 			children = (
@@ -455,6 +470,8 @@
 				87295C952A038BAD0067392D /* SceneDelegate.swift */,
 				E73DD13C24636FF100D77039 /* Assets.xcassets */,
 				E73DD14124636FF100D77039 /* Info.plist */,
+				87DB12CA2A0B54F000A83368 /* test.pcd */,
+				87DB12CF2A0B5D5F00A83368 /* test2.pcd */,
 			);
 			path = SceneDepthPointCloud;
 			sourceTree = "<group>";
@@ -523,7 +540,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87DB12D02A0B5D5F00A83368 /* test2.pcd in Resources */,
 				E73DD14024636FF100D77039 /* LaunchScreen.storyboard in Resources */,
+				87DB12CB2A0B54F000A83368 /* test.pcd in Resources */,
 				E73DD13D24636FF100D77039 /* Assets.xcassets in Resources */,
 				E73DD13B24636FEF00D77039 /* Main.storyboard in Resources */,
 			);
@@ -574,6 +593,7 @@
 				E7B7223B24807ACA002E43E8 /* MetalBuffer.swift in Sources */,
 				872C7A9E29F1332B002D91D2 /* LocationUsecase.swift in Sources */,
 				871356CD2A0AB80E0005DE8C /* WebViewVC.swift in Sources */,
+				87DB12CE2A0B552B00A83368 /* PCDViewerVC.swift in Sources */,
 				87C8FB1529F263C8000C37CE /* NetworkInterceptor.swift in Sources */,
 				877F533B29F62E2300A0F931 /* BackButton.swift in Sources */,
 				87295CA02A03AE8A0067392D /* LidarInfo.swift in Sources */,

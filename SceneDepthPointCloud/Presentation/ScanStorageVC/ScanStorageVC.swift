@@ -63,8 +63,37 @@ extension ScanStorageVC {
             .sink { [weak self] fileName in
                 guard let fileName = fileName else { return }
                 
-                print(fileName)
+                self?.showActionSheet(fileName: fileName)
             }
             .store(in: &self.cancellables)
+    }
+    
+    private func showActionSheet(fileName: String) {
+        let alert = UIAlertController(title: fileName, message: "", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "파일 공유", style: .default, handler: { [weak self] _ in
+            self?.shareScanData(fileName: fileName)
+        }))
+        alert.addAction(UIAlertAction(title: "파일 삭제", style: .destructive, handler: { [weak self] _ in
+            ScanStorage.remove(fileName: fileName)
+            // list reload 필요
+            self?.showAlert(title: "파일삭제 완료", text: "")
+        }))
+        alert.addAction(UIAlertAction(title: "취소", style: .default))
+        
+        self.present(alert, animated: true)
+    }
+    
+    private func shareScanData(fileName: String) {
+        let activityViewController = UIActivityViewController(activityItems: [ScanStorage.fileUrl(fileName: fileName)], applicationActivities: nil)
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            activityViewController.popoverPresentationController?.sourceView = self.navigationController?.view
+        }
+        
+        self.present(activityViewController, animated: true)
+        
+        activityViewController.completionWithItemsHandler = { (activityType: UIActivity.ActivityType?, completed: Bool, arrayReturnedItems: [Any]?, error: Error?) in
+            print("share success")
+        }
     }
 }

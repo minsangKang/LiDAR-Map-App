@@ -11,17 +11,28 @@ import Foundation
 /// 스캔된 Point Cloud Data 저장소
 final class ScanStorage {
     private init() { }
-    static let shared = ScanStorage()
     
-    static let rootUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("scans", isDirectory: false)
+    static let rootUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("scans", isDirectory: true)
+    
+    static func createDirectory() {
+        do {
+            try FileManager.default.createDirectory(at: rootUrl, withIntermediateDirectories: true)
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
     
     static var infos: [ScanInfo] {
         do {
-            let items = try FileManager.default.contentsOfDirectory(atPath: rootUrl.path)
+            if FileManager.default.fileExists(atPath: rootUrl.path) == false {
+                createDirectory()
+            }
+            
+            let urls = try FileManager.default.contentsOfDirectory(at: rootUrl, includingPropertiesForKeys: nil)
             var infos: [ScanInfo] = []
-            for item in items {
-                print(item)
-                if let info = get(fileName: item)?.info {
+            
+            for url in urls {
+                if let info = get(url: url)?.info {
                     infos.append(info)
                 }
             }
@@ -40,6 +51,10 @@ final class ScanStorage {
         encoder.dateEncodingStrategy = .iso8601
         
         do {
+            if FileManager.default.fileExists(atPath: rootUrl.path) == false {
+                createDirectory()
+            }
+            
             let data = try encoder.encode(obj)
             //동일이름의 파일이 있는 경우 삭제
             if FileManager.default.fileExists(atPath: url.path) {
@@ -54,8 +69,7 @@ final class ScanStorage {
         }
     }
     
-    static func get(fileName: String) -> ScanData? {
-        let url = rootUrl.appendingPathComponent(fileName)
+    static func get(url: URL) -> ScanData? {
         guard FileManager.default.fileExists(atPath: url.path) else { return nil }
         guard let data = FileManager.default.contents(atPath: url.path) else { return nil }
         

@@ -188,7 +188,8 @@ extension MainVC {
         
         // scansButton
         self.scansButton.addAction(UIAction(handler: { [weak self] _ in
-            self?.moveToScansVC()
+//            self?.moveToScansVC()
+            self?.moveToScanStorageVC()
         }), for: .touchUpInside)
         self.view.addSubview(self.scansButton)
         NSLayoutConstraint.activate([
@@ -354,6 +355,11 @@ extension MainVC {
     private func moveToScansVC() {
         let scansVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: ScansVC.identifier)
         self.navigationController?.pushViewController(scansVC, animated: true)
+    }
+    
+    private func moveToScanStorageVC() {
+        let scanStorageVC = ScanStorageVC()
+        self.navigationController?.pushViewController(scanStorageVC, animated: true)
     }
     
     /// mode값에 따라 현재 동작상태 표시내용 설정 함수

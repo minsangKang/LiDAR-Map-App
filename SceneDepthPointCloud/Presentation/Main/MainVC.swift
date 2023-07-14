@@ -217,6 +217,8 @@ extension MainVC {
         self.bindUploadProgress()
         self.bindProcessWithStorageData()
         self.bindSaveToStorageSuccess()
+        
+        self.bindScanData()
         self.bindSaveScanDataSuccess()
     }
     
@@ -324,6 +326,17 @@ extension MainVC {
                 } else {
                     self?.showAlertAndTerminate()
                 }
+            })
+            .store(in: &self.cancellables)
+    }
+    
+    private func bindScanData() {
+        self.viewModel?.$scanData
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] scanData in
+                guard scanData != nil else { return }
+                
+                self?.showAlertWithFilenameInput()
             })
             .store(in: &self.cancellables)
     }
@@ -470,6 +483,20 @@ extension MainVC {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 exit(0)
             }
+        }
+        
+        alert.addAction(ok)
+        self.present(alert, animated: true)
+    }
+    
+    private func showAlertWithFilenameInput() {
+        let alert = UIAlertController(title: "저장될 파일명을 입력해주세요", message: "", preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = "File Name"
+        }
+        let ok = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
+            let fileName = alert.textFields?.first?.text
+            self?.viewModel?.saveScanData(fileName: fileName)
         }
         
         alert.addAction(ok)

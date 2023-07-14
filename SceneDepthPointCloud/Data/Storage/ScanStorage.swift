@@ -36,7 +36,7 @@ final class ScanStorage {
                     infos.append(info)
                 }
             }
-            return infos
+            return infos.sorted { $0.date > $1.date }
         } catch {
             print(error.localizedDescription)
             return []

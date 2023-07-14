@@ -49,6 +49,8 @@ final class MainVM {
     /// 앱 내부 저장 성공여부
     @Published private(set) var saveToStorageSuccess: Bool?
     private(set) var networkErrorMessage: String = ""
+    /// ScanData 임시저장
+    @Published private(set) var scanData: ScanData?
     /// ScanData 저장 성공여부
     @Published private(set) var saveScanDataSuccess: Bool?
     
@@ -178,6 +180,22 @@ extension MainVM {
             }
         }
     }
+    
+    func saveScanData(fileName: String? = nil) {
+        if var scanData = self.scanData {
+            if let fileName = fileName {
+                scanData.rename(to: fileName)
+            }
+            
+            // ScanStorage 저장
+            let success = ScanStorage.save(scanData)
+            self.saveScanDataSuccess = success
+            // mode 변경
+            self.resetRenderer()
+            self.mode = .ready
+            self.scanData = nil
+        }
+    }
 }
 
 extension MainVM {
@@ -212,13 +230,7 @@ extension MainVM {
                       let pointCount = self?.renderer.currentPointCount else { return }
                 
                 // ScanData 생성
-                let scanData = ScanData(rawStringData: rawStringData, pointCount: pointCount)
-                // ScanStorage 저장
-                let success = ScanStorage.save(scanData)
-                self?.saveScanDataSuccess = success
-                // mode 변경
-                self?.resetRenderer()
-                self?.mode = .ready
+                self?.scanData = ScanData(rawStringData: rawStringData, pointCount: pointCount)
             }
             .store(in: &self.cancellables)
     }

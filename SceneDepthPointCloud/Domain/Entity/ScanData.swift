@@ -20,7 +20,7 @@ struct ScanData: Codable {
     init(rawStringData: String, pointCount: Int) {
         let now = Date()
         self.date = now
-        self.fileName = "\(now.yyyyMMddHHmm).ply"
+        self.fileName = "\(now.yyyyMMddHHmmss).ply"
         guard let plyData = rawStringData.data(using: .utf8) else {
             self.lidarData = Data()
             self.fileSize = "0 MB"

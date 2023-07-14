@@ -216,6 +216,7 @@ extension MainVC {
         self.bindUploadProgress()
         self.bindProcessWithStorageData()
         self.bindSaveToStorageSuccess()
+        self.bindSaveScanDataSuccess()
     }
     
     /// viewModel 의 mode 값 변화를 수신하기 위한 함수
@@ -321,6 +322,21 @@ extension MainVC {
                     self?.showAlert(title: "임시데이터 저장 실패", text: "")
                 } else {
                     self?.showAlertAndTerminate()
+                }
+            })
+            .store(in: &self.cancellables)
+    }
+    
+    private func bindSaveScanDataSuccess() {
+        self.viewModel?.$saveScanDataSuccess
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] success in
+                guard let success = success else { return }
+                
+                if success == false {
+                    self?.showAlert(title: "ScanData 저장 실패", text: "")
+                } else {
+                    self?.showAlert(title: "ScanData 저장 성공", text: "")
                 }
             })
             .store(in: &self.cancellables)

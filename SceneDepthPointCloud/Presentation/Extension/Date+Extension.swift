@@ -9,9 +9,9 @@
 import Foundation
 
 extension Date {
-    var yyyyMMddHHmm: String {
+    var yyyyMMddHHmmss: String {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm"
+        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
         return dateFormatter.string(from: self)
     }
 }

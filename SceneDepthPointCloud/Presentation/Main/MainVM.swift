@@ -49,6 +49,8 @@ final class MainVM {
     /// 앱 내부 저장 성공여부
     @Published private(set) var saveToStorageSuccess: Bool?
     private(set) var networkErrorMessage: String = ""
+    /// ScanData 저장 성공여부
+    @Published private(set) var saveScanDataSuccess: Bool?
     
     /// 실시간 LiDAR 측정 및 Point Cloud 표시관련 핵심로직 담당 객체
     private let renderer: Renderer
@@ -188,18 +190,35 @@ extension MainVM {
             }
             .store(in: &self.cancellables)
         
+//        self.renderer.$lidarRawStringData
+//            .receive(on: DispatchQueue.global())
+//            .sink { [weak self] rawStringData in
+//                guard let rawStringData = rawStringData,
+//                      let pointCount = self?.renderer.currentPointCount else { return }
+//
+//                self?.lidarData = LiDARData(rawStringData: rawStringData, pointCount: pointCount)
+//
+//                // MARK: location, lidar 파일 저장로직
+//                if self?.mode == .recordingTerminate {
+//                    self?.saveCurrentFilesToStorage()
+//                }
+//            }
+//            .store(in: &self.cancellables)
+        
         self.renderer.$lidarRawStringData
             .receive(on: DispatchQueue.global())
             .sink { [weak self] rawStringData in
                 guard let rawStringData = rawStringData,
                       let pointCount = self?.renderer.currentPointCount else { return }
                 
-                self?.lidarData = LiDARData(rawStringData: rawStringData, pointCount: pointCount)
-                
-                // MARK: location, lidar 파일 저장로직
-                if self?.mode == .recordingTerminate {
-                    self?.saveCurrentFilesToStorage()
-                }
+                // ScanData 생성
+                let scanData = ScanData(rawStringData: rawStringData, pointCount: pointCount)
+                // ScanStorage 저장
+                let success = ScanStorage.save(scanData)
+                self?.saveScanDataSuccess = success
+                // mode 변경
+                self?.resetRenderer()
+                self?.mode = .ready
             }
             .store(in: &self.cancellables)
     }

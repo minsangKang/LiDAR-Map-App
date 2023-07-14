@@ -188,7 +188,7 @@ extension MainVM {
             }
             
             // ScanStorage 저장
-            let success = ScanStorage.save(scanData)
+            let success = ScanStorage.shared.save(scanData)
             self.saveScanDataSuccess = success
             // mode 변경
             self.resetRenderer()

@@ -10,10 +10,11 @@ import SwiftUI
 
 struct ScanList: View {
     @EnvironmentObject var listener: ScanInfoRowEventListener
+    @ObservedObject var scanStorage = ScanStorage.shared
     
     var body: some View {
         List {
-            ForEach(ScanStorage.infos) { info in
+            ForEach(scanStorage.infos) { info in
                 ScanInfoRow(info: info)
                     .onTapGesture {
                         listener.selectedLidarFileName = info.fileName

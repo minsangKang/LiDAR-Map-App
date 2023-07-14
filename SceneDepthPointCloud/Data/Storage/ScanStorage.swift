@@ -9,25 +9,26 @@
 import Foundation
 
 /// 스캔된 Point Cloud Data 저장소
-final class ScanStorage {
-    private init() { }
+final class ScanStorage: ObservableObject {
+    static let shared = ScanStorage()
     
-    static let infosRoot = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("scanInfos", isDirectory: true)
-    static let filesRoot = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("scanFiles", isDirectory: true)
+    let infosRoot = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("scanInfos", isDirectory: true)
+    let filesRoot = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("scanFiles", isDirectory: true)
     
-    static func createDirectory() {
-        do {
-            try FileManager.default.createDirectory(at: infosRoot, withIntermediateDirectories: true)
-            try FileManager.default.createDirectory(at: filesRoot, withIntermediateDirectories: true)
-        } catch {
-            print(error.localizedDescription)
+    @Published var infos: [ScanInfo] = [] {
+        didSet {
+            print(infos.count)
         }
     }
     
-    static var infos: [ScanInfo] {
+    private init() {
+        self.updateInfos()
+    }
+    
+    private func updateInfos() {
         do {
-            if FileManager.default.fileExists(atPath: infosRoot.path) == false {
-                createDirectory()
+            if FileManager.default.fileExists(atPath: self.infosRoot.path) == false {
+                self.createDirectory()
             }
             
             let urls = try FileManager.default.contentsOfDirectory(at: infosRoot, includingPropertiesForKeys: nil)
@@ -38,14 +39,22 @@ final class ScanStorage {
                     infos.append(info)
                 }
             }
-            return infos.sorted { $0.date > $1.date }
+            self.infos = infos
         } catch {
             print(error.localizedDescription)
-            return []
         }
     }
     
-    static func save(_ obj: ScanData) -> Bool {
+    func createDirectory() {
+        do {
+            try FileManager.default.createDirectory(at: infosRoot, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(at: filesRoot, withIntermediateDirectories: true)
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func save(_ obj: ScanData) -> Bool {
         let infoUrl = infosRoot.appendingPathComponent(obj.fileName)
         let fileUrl = filesRoot.appendingPathComponent(obj.fileName)
         print("---> save to here: \(infoUrl.path)")
@@ -72,6 +81,7 @@ final class ScanStorage {
             
             FileManager.default.createFile(atPath: fileUrl.path, contents: obj.lidarData)
             
+            self.updateInfos()
             return true
         } catch let error {
             print("---> Failed to store msg: \(error.localizedDescription)")
@@ -79,7 +89,7 @@ final class ScanStorage {
         }
     }
     
-    static func getInfo(url: URL) -> ScanInfo? {
+    func getInfo(url: URL) -> ScanInfo? {
         guard FileManager.default.fileExists(atPath: url.path) else { return nil }
         guard let data = FileManager.default.contents(atPath: url.path) else { return nil }
         
@@ -95,18 +105,20 @@ final class ScanStorage {
         }
     }
     
-    static func remove(fileName: String) {
+    func remove(fileName: String) {
         do {
             let infoUrl = infosRoot.appendingPathComponent(fileName)
             try FileManager.default.removeItem(at: infoUrl)
             let fileUrl = filesRoot.appendingPathComponent(fileName)
             try FileManager.default.removeItem(at: fileUrl)
+            
+            self.updateInfos()
         } catch let error {
             print("---> Failed to remove msg: \(error.localizedDescription)")
         }
     }
     
-    static func fileUrl(fileName: String) -> URL {
+    func fileUrl(fileName: String) -> URL {
         return filesRoot.appendingPathComponent(fileName)
     }
 }

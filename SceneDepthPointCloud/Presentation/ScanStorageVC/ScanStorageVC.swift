@@ -43,6 +43,8 @@ final class ScanStorageVC: UIViewController {
 extension ScanStorageVC {
     private func configureUI() {
         self.title = "ScanList"
+        self.view.backgroundColor = .systemBackground
+        
         let hostingVC = UIHostingController(rootView: ScanList().environmentObject(self.listener))
         self.addChild(hostingVC)
         hostingVC.didMove(toParent: self)
@@ -74,7 +76,7 @@ extension ScanStorageVC {
             self?.shareScanData(fileName: fileName)
         }))
         alert.addAction(UIAlertAction(title: "파일 삭제", style: .destructive, handler: { [weak self] _ in
-            ScanStorage.remove(fileName: fileName)
+            ScanStorage.shared.remove(fileName: fileName)
             // list reload 필요
             self?.showAlert(title: "파일삭제 완료", text: "")
         }))
@@ -84,7 +86,7 @@ extension ScanStorageVC {
     }
     
     private func shareScanData(fileName: String) {
-        let activityViewController = UIActivityViewController(activityItems: [ScanStorage.fileUrl(fileName: fileName)], applicationActivities: nil)
+        let activityViewController = UIActivityViewController(activityItems: [ScanStorage.shared.fileUrl(fileName: fileName)], applicationActivities: nil)
         
         if UIDevice.current.userInterfaceIdiom == .pad {
             activityViewController.popoverPresentationController?.sourceView = self.navigationController?.view

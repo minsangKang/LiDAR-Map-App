@@ -13,7 +13,7 @@ struct ScanData: Codable {
     let date: Date
     var fileName: String
     let lidarData: Data
-    let lidarFileSize: String
+    let fileSize: String
     let points: Int
     
     
@@ -23,18 +23,22 @@ struct ScanData: Codable {
         self.fileName = "\(now.yyyyMMddHHmm).ply"
         guard let plyData = rawStringData.data(using: .utf8) else {
             self.lidarData = Data()
-            self.lidarFileSize = "0 MB"
+            self.fileSize = "0 MB"
             self.points = 0
             return
         }
         
         self.lidarData = plyData
-        self.lidarFileSize = plyData.fileSize
+        self.fileSize = plyData.fileSize
         self.points = pointCount
     }
     
     // MARK: Filename 변경
     mutating func rename(to name: String) {
         self.fileName = "\(name).ply"
+    }
+    
+    var info: ScanInfo {
+        return ScanInfo(date: self.date, fileName: self.fileName, fileSize: self.fileSize, points: self.points)
     }
 }

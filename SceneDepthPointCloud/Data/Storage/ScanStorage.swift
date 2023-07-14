@@ -8,14 +8,33 @@
 
 import Foundation
 
-/// 서버전송 오류로 인한 LiDAR 스캔파일 저장소
+/// 스캔된 Point Cloud Data 저장소
 final class ScanStorage {
     private init() { }
+    static let shared = ScanStorage()
     
-    static let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("scans", isDirectory: false)
+    static let rootUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("scans", isDirectory: false)
     
-    static func save(_ obj: LiDARData) -> Bool {
-        print("---> save to here: \(url)")
+    static var infos: [ScanInfo] {
+        do {
+            let items = try FileManager.default.contentsOfDirectory(atPath: rootUrl.path)
+            var infos: [ScanInfo] = []
+            for item in items {
+                print(item)
+                if let info = get(fileName: item)?.info {
+                    infos.append(info)
+                }
+            }
+            return infos
+        } catch {
+            print(error.localizedDescription)
+            return []
+        }
+    }
+    
+    static func save(_ obj: ScanData) -> Bool {
+        let url = rootUrl.appendingPathComponent(obj.fileName)
+        print("---> save to here: \(url.path)")
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         encoder.dateEncodingStrategy = .iso8601
@@ -35,7 +54,8 @@ final class ScanStorage {
         }
     }
     
-    static func get() -> LiDARData? {
+    static func get(fileName: String) -> ScanData? {
+        let url = rootUrl.appendingPathComponent(fileName)
         guard FileManager.default.fileExists(atPath: url.path) else { return nil }
         guard let data = FileManager.default.contents(atPath: url.path) else { return nil }
         
@@ -43,16 +63,17 @@ final class ScanStorage {
         decoder.dateDecodingStrategy = .iso8601
         
         do {
-            let lidarData = try decoder.decode(LiDARData.self, from: data)
-            return lidarData
+            let scanData = try decoder.decode(ScanData.self, from: data)
+            return scanData
         } catch let error {
             print("---> Failed to decode msg: \(error.localizedDescription)")
             return nil
         }
     }
     
-    static func remove() {
+    static func remove(fileName: String) {
         do {
+            let url = rootUrl.appendingPathComponent(fileName)
             try FileManager.default.removeItem(at: url)
         } catch let error {
             print("---> Failed to remove msg: \(error.localizedDescription)")

@@ -72,6 +72,7 @@
 		87D842B02A611F0000032711 /* ScanData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D842AF2A611F0000032711 /* ScanData.swift */; };
 		87D842B22A611F9B00032711 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D842B12A611F9B00032711 /* Date+Extension.swift */; };
 		87D842B42A6120BD00032711 /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D842B32A6120BD00032711 /* Data+Extension.swift */; };
+		87D842B62A61353000032711 /* ScanInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D842B52A61353000032711 /* ScanInfo.swift */; };
 		87E9B5222A08A9D200FF4A8D /* LidarProcessStatusLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E9B5212A08A9D200FF4A8D /* LidarProcessStatusLabel.swift */; };
 		87E9B5282A08BED300FF4A8D /* BuildingInfoDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E9B5272A08BED300FF4A8D /* BuildingInfoDTO.swift */; };
 		87E9B52A2A08C8C300FF4A8D /* BuildingInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E9B5292A08C8C300FF4A8D /* BuildingInfo.swift */; };
@@ -160,6 +161,7 @@
 		87D842AF2A611F0000032711 /* ScanData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanData.swift; sourceTree = "<group>"; };
 		87D842B12A611F9B00032711 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
 		87D842B32A6120BD00032711 /* Data+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extension.swift"; sourceTree = "<group>"; };
+		87D842B52A61353000032711 /* ScanInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanInfo.swift; sourceTree = "<group>"; };
 		87E9B5212A08A9D200FF4A8D /* LidarProcessStatusLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LidarProcessStatusLabel.swift; sourceTree = "<group>"; };
 		87E9B5272A08BED300FF4A8D /* BuildingInfoDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildingInfoDTO.swift; sourceTree = "<group>"; };
 		87E9B5292A08C8C300FF4A8D /* BuildingInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildingInfo.swift; sourceTree = "<group>"; };
@@ -459,6 +461,7 @@
 				87E9B5292A08C8C300FF4A8D /* BuildingInfo.swift */,
 				87E9B5352A08E24700FF4A8D /* LidarDetailInfo.swift */,
 				87D842AF2A611F0000032711 /* ScanData.swift */,
+				87D842B52A61353000032711 /* ScanInfo.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -620,6 +623,7 @@
 				871356CD2A0AB80E0005DE8C /* WebViewVC.swift in Sources */,
 				87C8FB1529F263C8000C37CE /* NetworkInterceptor.swift in Sources */,
 				877F533B29F62E2300A0F931 /* BackButton.swift in Sources */,
+				87D842B62A61353000032711 /* ScanInfo.swift in Sources */,
 				87295CA02A03AE8A0067392D /* LidarInfo.swift in Sources */,
 				87295C942A0386B30067392D /* ScansButton.swift in Sources */,
 				87C8FAFE29F18DB3000C37CE /* SelectLocationTitleLabel.swift in Sources */,

@@ -39,6 +39,6 @@ struct ScanData: Codable {
     }
     
     var info: ScanInfo {
-        return ScanInfo(date: self.date, fileName: self.fileName, fileSize: self.fileSize, points: self.points)
+        return ScanInfo(id: self.fileName, date: self.date, fileName: self.fileName, fileSize: self.fileSize, points: self.points)
     }
 }

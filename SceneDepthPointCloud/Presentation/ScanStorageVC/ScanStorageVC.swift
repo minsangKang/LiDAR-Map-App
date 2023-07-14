@@ -7,8 +7,13 @@
 //
 
 import UIKit
+import SwiftUI
+import Combine
 
 final class ScanStorageVC: UIViewController {
+    private let listener = ScanInfoRowEventListener()
+    private var cancellables: [AnyCancellable] = []
+    
     init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -19,9 +24,8 @@ final class ScanStorageVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .black
-
-        print(ScanStorage.infos)
+        self.configureUI()
+        self.bind()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -33,5 +37,34 @@ final class ScanStorageVC: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         AppDelegate.shared.shouldSupportAllOrientation = false
+    }
+}
+
+extension ScanStorageVC {
+    private func configureUI() {
+        self.title = "ScanList"
+        let hostingVC = UIHostingController(rootView: ScanList().environmentObject(self.listener))
+        self.addChild(hostingVC)
+        hostingVC.didMove(toParent: self)
+        
+        hostingVC.view.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(hostingVC.view)
+        
+        NSLayoutConstraint.activate([
+            hostingVC.view.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            hostingVC.view.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
+            hostingVC.view.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
+            hostingVC.view.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+    }
+    
+    private func bind() {
+        self.listener.$selectedLidarFileName
+            .sink { [weak self] fileName in
+                guard let fileName = fileName else { return }
+                
+                print(fileName)
+            }
+            .store(in: &self.cancellables)
     }
 }

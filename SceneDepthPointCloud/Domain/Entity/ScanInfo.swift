@@ -8,7 +8,8 @@
 
 import Foundation
 
-struct ScanInfo: Codable {
+struct ScanInfo: Codable, Identifiable, Hashable {
+    let id: String
     let date: Date
     let fileName: String
     let fileSize: String

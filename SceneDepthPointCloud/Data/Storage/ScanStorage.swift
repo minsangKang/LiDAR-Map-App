@@ -1,20 +1,20 @@
 //
-//  LocationStorage.swift
+//  ScanStorage.swift
 //  SceneDepthPointCloud
 //
-//  Created by Kang Minsang on 2023/05/29.
+//  Created by Kang Minsang on 2023/07/14.
 //  Copyright © 2023 Apple. All rights reserved.
 //
 
 import Foundation
 
-/// 서버전송 오류로 인한 위치정보 임시저장소
-final class LocationStorage {
+/// 서버전송 오류로 인한 LiDAR 스캔파일 저장소
+final class ScanStorage {
     private init() { }
     
-    static let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("locationData", isDirectory: false)
+    static let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("scans", isDirectory: false)
     
-    static func save(_ obj: LocationData) -> Bool {
+    static func save(_ obj: LiDARData) -> Bool {
         print("---> save to here: \(url)")
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
@@ -35,7 +35,7 @@ final class LocationStorage {
         }
     }
     
-    static func get() -> LocationData? {
+    static func get() -> LiDARData? {
         guard FileManager.default.fileExists(atPath: url.path) else { return nil }
         guard let data = FileManager.default.contents(atPath: url.path) else { return nil }
         
@@ -43,8 +43,8 @@ final class LocationStorage {
         decoder.dateDecodingStrategy = .iso8601
         
         do {
-            let locationData = try decoder.decode(LocationData.self, from: data)
-            return locationData
+            let lidarData = try decoder.decode(LiDARData.self, from: data)
+            return lidarData
         } catch let error {
             print("---> Failed to decode msg: \(error.localizedDescription)")
             return nil

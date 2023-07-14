@@ -82,6 +82,10 @@ extension ScanStorageVC {
         }))
         alert.addAction(UIAlertAction(title: "취소", style: .default))
         
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            alert.popoverPresentationController?.sourceView = self.navigationController?.navigationBar
+        }
+        
         self.present(alert, animated: true)
     }
     
@@ -89,7 +93,7 @@ extension ScanStorageVC {
         let activityViewController = UIActivityViewController(activityItems: [ScanStorage.shared.fileUrl(fileName: fileName)], applicationActivities: nil)
         
         if UIDevice.current.userInterfaceIdiom == .pad {
-            activityViewController.popoverPresentationController?.sourceView = self.navigationController?.view
+            activityViewController.popoverPresentationController?.sourceView = self.navigationController?.navigationBar
         }
         
         self.present(activityViewController, animated: true)
